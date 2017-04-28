@@ -31,9 +31,9 @@ function create_pkg()
 
 function extract_archive()
 {
-    echo -n Exctracting $1 ...
+    echo -n "Exctracting $1 ... ""
     tar -xf $SOURCEDIR/$1 -C $BUILDDIR
-    echo " OK"
+    echo "OK"
 }
 
 function build_emptydirs()
@@ -172,10 +172,28 @@ function build_file()
     cleanup_outputdir
 }
 
+function build_binutils()
+{
+    BINUTILSVERSION=2.27
+    extract_archive binutils-$BINUTILSVERSION.tar.bz2
+
+    cd $BUILDDIR/binutils-$BINUTILSVERSION
+    mkdir -v build
+    cd build
+    ../configure --prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg binutils-$BINUTILSVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
 #build_manpages
 #build_glibc
-build_zlib
+#build_zlib
 #build_file
+build_binutils
