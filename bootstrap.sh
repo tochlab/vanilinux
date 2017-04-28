@@ -21,9 +21,15 @@ function cleanup_outputdir()
     echo OK
 }
 
+function create_pkg()
+{
+    cd $OUTPUTDIR
+    tar cvfz $RESULTDIR/$1-pkg.tar.gz .
+    cd $TOPDIR
+}
+
 function build_emptydirs()
 {
-    # == emptydirs
     cd output
     mkdir -pv {bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
     mkdir -pv {media/{floppy,cdrom},sbin,srv,var}
@@ -43,15 +49,14 @@ function build_emptydirs()
     ln -sv /run /var/run
     ln -sv /run/lock /var/lock
     mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
-    tar cvfz $RESULTDIR/emptydirs-0-pkg.tar.gz .
-    cd $TOPDIR
+
+    create_pkg emptydirs-0
     cleanup_builddir
     cleanup_outputdir
 }
 
 function build_bash()
 {
-    # == bash
     BASHVERSION=4.3
     cd build/
     tar xvfz $SOURCEDIR/bash-$BASHVERSION.tar.gz
@@ -65,8 +70,8 @@ function build_bash()
     if [[ ! -e $OUTPUTDIR/bin/sh ]] ; then
         ln -sf bash "$OUTPUTDIR"/bin/sh
     fi
-    tar cvfz $RESULTDIR/bash-$BASHVERSION-pkg.tar.gz .
-    cd $TOPDIR
+
+    create_pkg bash-$BASHVERSION
     cleanup_builddir
     cleanup_outputdir
 }
@@ -83,9 +88,8 @@ function build_linuxheaders()
     find dest/include \( -name .install -o -name ..install.cmd \) -delete
     mkdir -p $OUTPUTDIR/include
     cp -rv dest/include/* $OUTPUTDIR/include
-    cd $OUTPUTDIR
-    tar cvfz $RESULTDIR/linux-$LINUXVERSION-pkg.tar.gz .
-    cd $TOPDIR
+
+    create_pkg linux-headers-$LINUXVERSION
     cleanup_builddir
     cleanup_outputdir
 }
@@ -97,14 +101,13 @@ function build_manpages()
     tar xvfJ $SOURCEDIR/man-pages-$MANVERSION.tar.xz
     cd man-pages-$MANVERSION
     make DESTDIR=$OUTPUTDIR/ install
-    cd $OUTPUTDIR
-    tar cvfz $RESULTDIR/man-pages-$MANVERSION-pkg.tar.gz .
-    cd $TOPDIR
+
+    create_pkg man-pages-$MANVERSION
     cleanup_builddir
     cleanup_outputdir
 }
 
 #build_emptydirs
 #build_linuxheaders
-#build_bash
-build_manpages
+build_bash
+#build_manpages
