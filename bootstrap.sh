@@ -315,6 +315,40 @@ function build_pkg_config()
     cleanup_outputdir
 }
 
+function build_ncurses()
+{
+    NCURSESVERSION=6.0
+    extract_archive ncurses-$NCURSESVERSION.tar.gz
+
+    cd $BUILDDIR/ncurses-$NCURSESVERSION
+    sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
+    ./configure --prefix=/usr \
+    --mandir=/usr/share/man \
+    --with-shared \
+    --without-debug \
+    --without-normal \
+    --enable-pc-files \
+    --enable-widec \
+    --without-hashed-db \
+    --with-cxx-shared \
+    --enable-symlinks \
+    --with-rcs-ids \
+    --with-manpage-format=normal \
+    --enable-const \
+    --enable-colorfgbg \
+    --enable-hard-tabs \
+    --enable-echo
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    mkdir $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/libncursesw.so* $OUTPUTDIR/lib
+
+    create_pkg ncurses-$NCURSESVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -328,4 +362,5 @@ function build_pkg_config()
 #build_mpc
 #build_gcc
 #build_bzip2
-build_pkg_config
+#build_pkg_config
+build_ncurses
