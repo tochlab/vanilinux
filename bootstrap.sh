@@ -90,4 +90,21 @@ function build_linuxheaders()
     cleanup_outputdir
 }
 
-build_linuxheaders
+function build_manpages()
+{
+    MANVERSION=4.09
+    cd build/
+    tar xvfJ $SOURCEDIR/man-pages-$MANVERSION.tar.xz
+    cd man-pages-$MANVERSION
+    make DESTDIR=$OUTPUTDIR/ install
+    cd $OUTPUTDIR
+    tar cvfz $RESULTDIR/man-pages-$MANVERSION-pkg.tar.gz .
+    cd $TOPDIR
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+#build_emptydirs
+#build_linuxheaders
+#build_bash
+build_manpages
