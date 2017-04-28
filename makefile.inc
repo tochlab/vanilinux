@@ -1,2 +1,3 @@
-BUILDDIR=$(PWD)/build2
-OUTPUTDIR=$(PWD)/output2
+TMPDIR=$(PWD)/tmp
+BUILDDIR=$(TMPDIR)/build
+OUTPUTDIR=$(TMPDIR)/output
