@@ -198,7 +198,7 @@ function build_gmp()
 
     cd $BUILDDIR/gmp-$GMPVERSION
     ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp
-    make
+    make -j 4
     make html
     make DESTDIR=$OUTPUTDIR install
     make DESTDIR=$OUTPUTDIR install-html
@@ -208,6 +208,43 @@ function build_gmp()
     cleanup_outputdir
 }
 
+function build_mpfr()
+{
+    MPFRVERSION=3.1.3
+    extract_archive mpfr-$MPFRVERSION.tar.xz
+
+    cd $BUILDDIR/mpfr-$MPFRVERSION
+    ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr
+
+    make -j 4
+    make html
+    make DESTDIR=$OUTPUTDIR install
+    make DESTDIR=$OUTPUTDIR install-html
+
+    create_pkg mpfr-$MPFRVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+function build_mpc()
+{
+    MPCRVERSION=1.0.2
+    extract_archive mpc-$MPCRVERSION.tar.gz
+
+    cd $BUILDDIR/mpc-$MPCRVERSION
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc
+    make -j 4
+    make html
+    make DESTDIR=$OUTPUTDIR install
+    make DESTDIR=$OUTPUTDIR install-html
+
+    create_pkg mpc-$MPCRVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -216,4 +253,6 @@ function build_gmp()
 #build_zlib
 #build_file
 #build_binutils
-build_gmp
+#build_gmp
+#build_mpfr
+build_mpc
