@@ -6,6 +6,7 @@ SOURCEDIR=`pwd`/sources
 RESULTDIR=`pwd`/result
 mkdir -p $BUILDDIR
 mkdir -p $OUTPUTDIR
+mkdir -p $RESULTDIR
 
 function cleanup_builddir()
 {
