@@ -1,0 +1,2 @@
+BUILDDIR=$(PWD)/build2
+OUTPUTDIR=$(PWD)/output2
