@@ -317,6 +317,17 @@ function build_pkg_config()
 
 function build_ncurses()
 {
+# don't create non-wide-character Ncurses libraries
+#    make distclean
+#./configure --prefix=/usr    \
+#            --with-shared    \
+#            --without-normal \
+#            --without-debug  \
+#            --without-cxx-binding \
+#            --with-abi-version=5 
+#make sources libs
+#cp -av lib/lib*.so.5* /usr/lib
+
     NCURSESVERSION=6.0
     extract_archive ncurses-$NCURSESVERSION.tar.gz
 
@@ -349,11 +360,11 @@ function build_ncurses()
     cleanup_outputdir
 }
 
-#build_emptydirs
+build_emptydirs
 #build_linuxheaders
-#build_bash
+build_bash
 #build_manpages
-#build_glibc
+build_glibc
 #build_zlib
 #build_file
 #build_binutils
