@@ -355,16 +355,29 @@ function build_ncurses()
     mkdir $OUTPUTDIR/lib
     mv -v $OUTPUTDIR/usr/lib/libncursesw.so* $OUTPUTDIR/lib
 
+    make distclean
+    ./configure --prefix=/usr \
+            --with-shared    \
+            --without-normal \
+            --without-debug  \
+            --without-cxx-binding
+    make sourses libs -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    mv -v $OUTPUTDIR/usr/lib/libncurses.so* $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/libcurses.so* $OUTPUTDIR/lib
+    
     create_pkg ncurses-$NCURSESVERSION
+    
     cleanup_builddir
     cleanup_outputdir
 }
 
-build_emptydirs
+#build_emptydirs
 #build_linuxheaders
-build_bash
+#build_bash
 #build_manpages
-build_glibc
+#build_glibc
 #build_zlib
 #build_file
 #build_binutils
