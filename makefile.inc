@@ -11,7 +11,7 @@ define extract_archive
 endef
 
 define create_pkg
-    echo -n "Creating package $(1).tgz"
+    echo -n "Creating package $(1).tgz ... "
     cd $(OUTPUTDIR); tar cfz $(PKGDIR)/$1.tgz .
     echo "OK"
 endef
@@ -20,3 +20,5 @@ define clean_workdirs
     rm -fr $(BUILDDIR)
     rm -fr $(OUTPUTDIR)
 endef
+
+.ONESHELL:
