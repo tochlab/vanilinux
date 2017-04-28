@@ -26,7 +26,7 @@ function create_pkg()
 {
     echo -n "Creating archive for $1 ... "
     cd $OUTPUTDIR
-    tar cfz $RESULTDIR/$1-pkg.tar.gz .
+    tar cfz $RESULTDIR/$1.tgz .
     cd $TOPDIR
     echo "OK"
 }
@@ -243,7 +243,31 @@ function build_mpc()
     cleanup_outputdir
 }
 
+function build_gcc()
+{
+    GCCVERSION=5.4.0
+    extract_archive gcc-$GCCVERSION.tar.bz2
 
+    cd $BUILDDIR/gcc-$GCCVERSION
+    mkdir -v build
+    cd build
+    SED=sed
+    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --with-system-zlib
+    make -j 8
+    make DESTDIR=$OUTPUTDIR install
+
+    cd $OUTPUTDIR
+    mkdir -v lib
+    #TODO this have to be without ..
+    ln -sv ../usr/bin/cpp lib/cpp
+    ln -sv gcc cc
+    #mkdir -pv usr/share/gdb/auto-load/usr/lib
+    #mv -v usr/lib/*gdb.py usr/share/gdb/auto-load/usr/lib
+
+    create_pkg gcc-$GCCVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
 
 #build_emptydirs
 #build_linuxheaders
@@ -255,4 +279,5 @@ function build_mpc()
 #build_binutils
 #build_gmp
 #build_mpfr
-build_mpc
+#build_mpc
+#build_gcc
