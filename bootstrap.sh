@@ -269,6 +269,37 @@ function build_gcc()
     cleanup_outputdir
 }
 
+function build_bzip2()
+{
+    BZIPVERSION=1.0.6
+    extract_archive bzip2-$BZIPVERSION.tar.gz
+
+    cd $BUILDDIR/bzip2-$BZIPVERSION
+    sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+    sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
+
+    make -f Makefile-libbz2_so
+    cd $OUTPUTDIR
+    mkdir bin
+    mkdir lib   
+    cp -v $BUILDDIR/bzip2-$BZIPVERSION/bzip2-shared bin/bzip2
+    cp -v $BUILDDIR/bzip2-$BZIPVERSION/libbz2.so.1.0.6 lib
+    cd bin
+    ln -s bzip2 bzcat
+    ln -s bzip2 bunzip2
+    cd ../lib/
+    ln -s libbz2.so.1.0.6 libbz2.so
+    cd $BUILDDIR/bzip2-$BZIPVERSION
+    make clean
+    make
+    make PREFIX=$OUTPUTDIR/usr install
+    rm -v $OUTPUTDIR/usr/bin/{bunzip2,bzcat,bzip2}
+
+    create_pkg bzip2-$BZIPVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -281,3 +312,4 @@ function build_gcc()
 #build_mpfr
 #build_mpc
 #build_gcc
+build_bzip2
