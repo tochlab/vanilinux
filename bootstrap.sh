@@ -21,46 +21,73 @@ function cleanup_outputdir()
     echo OK
 }
 
-# == emptydirs
-cd output
-mkdir -pv {bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
-mkdir -pv {media/{floppy,cdrom},sbin,srv,var}
-install -dv -m 0750 root
-install -dv -m 1777 tmp var/tmp
-mkdir -pv usr/{,local/}{bin,include,lib,sbin,src}
-mkdir -pv usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -v  usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -v  usr/libexec
-mkdir -pv usr/{,local/}share/man/man{1..8}
+function build_emptydirs()
+{
+    # == emptydirs
+    cd output
+    mkdir -pv {bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+    mkdir -pv {media/{floppy,cdrom},sbin,srv,var}
+    install -dv -m 0750 root
+    install -dv -m 1777 tmp var/tmp
+    mkdir -pv usr/{,local/}{bin,include,lib,sbin,src}
+    mkdir -pv usr/{,local/}share/{color,dict,doc,info,locale,man}
+    mkdir -v  usr/{,local/}share/{misc,terminfo,zoneinfo}
+    mkdir -v  usr/libexec
+    mkdir -pv usr/{,local/}share/man/man{1..8}
 
-case $(uname -m) in
- x86_64) mkdir -v /lib64 ;;
-esac
+    case $(uname -m) in
+    x86_64) mkdir -v /lib64 ;;
+    esac
 
-mkdir -v /var/{log,mail,spool}
-ln -sv /run /var/run
-ln -sv /run/lock /var/lock
-mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
-tar cvfz $RESULTDIR/emptydirs-0-pkg.tar.gz .
-cd $TOPDIR
-cleanup_builddir
-cleanup_outputdir
+    mkdir -v /var/{log,mail,spool}
+    ln -sv /run /var/run
+    ln -sv /run/lock /var/lock
+    mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
+    tar cvfz $RESULTDIR/emptydirs-0-pkg.tar.gz .
+    cd $TOPDIR
+    cleanup_builddir
+    cleanup_outputdir
+}
 
-# == bash
-BASHVERSION=4.3
-cd build/
-tar xvfz $SOURCEDIR/bash-$BASHVERSION.tar.gz
-cd bash-$BASHVERSION
-./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
-make -j 4
-make DESTDIR=$OUTPUTDIR install
-cd $OUTPUTDIR
-mkdir -p bin
-mv usr/bin/bash bin/
-if [[ ! -e $OUTPUTDIR/bin/sh ]] ; then
+function build_bash()
+{
+    # == bash
+    BASHVERSION=4.3
+    cd build/
+    tar xvfz $SOURCEDIR/bash-$BASHVERSION.tar.gz
+    cd bash-$BASHVERSION
+    ./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+    cd $OUTPUTDIR
+    mkdir -p bin
+    mv usr/bin/bash bin/
+    if [[ ! -e $OUTPUTDIR/bin/sh ]] ; then
         ln -sf bash "$OUTPUTDIR"/bin/sh
-fi
-tar cvfz $RESULTDIR/bash-$BASHVERSION-pkg.tar.gz .
-cd $TOPDIR
-cleanup_builddir
-cleanup_outputdir
+    fi
+    tar cvfz $RESULTDIR/bash-$BASHVERSION-pkg.tar.gz .
+    cd $TOPDIR
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+function build_linuxheaders()
+{
+    # == linux
+    LINUXVERSION=4.9.25
+    cd build/
+    tar xvfJ $SOURCEDIR/linux-$LINUXVERSION.tar.xz
+    cd linux-$LINUXVERSION
+    make mrproper
+    make INSTALL_HDR_PATH=dest headers_install
+    find dest/include \( -name .install -o -name ..install.cmd \) -delete
+    mkdir -p $OUTPUTDIR/include
+    cp -rv dest/include/* $OUTPUTDIR/include
+    cd $OUTPUTDIR
+    tar cvfz $RESULTDIR/linux-$LINUXVERSION-pkg.tar.gz .
+    cd $TOPDIR
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+build_linuxheaders
