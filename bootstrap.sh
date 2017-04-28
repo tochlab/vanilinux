@@ -300,6 +300,21 @@ function build_bzip2()
     cleanup_outputdir
 }
 
+function build_pkg_config()
+{
+    PKGCONFIGVERSION=0.28
+    extract_archive pkg-config-$PKGCONFIGVERSION.tar.gz
+
+    cd $BUILDDIR/pkg-config-$PKGCONFIGVERSION
+    ./configure --prefix=/usr --with-internal-glib --disable-compile-warnings --disable-host-tool --docdir=/usr/share/doc/pkg-config
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg pkg-config-$PKGCONFIGVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -312,4 +327,5 @@ function build_bzip2()
 #build_mpfr
 #build_mpc
 #build_gcc
-build_bzip2
+#build_bzip2
+build_pkg_config
