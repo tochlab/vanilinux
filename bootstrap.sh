@@ -24,14 +24,16 @@ function cleanup_outputdir()
 
 function create_pkg()
 {
+    echo -n "Creating archive for $1 ... "
     cd $OUTPUTDIR
-    tar cvfz $RESULTDIR/$1-pkg.tar.gz .
+    tar cfz $RESULTDIR/$1-pkg.tar.gz .
     cd $TOPDIR
+    echo "OK"
 }
 
 function extract_archive()
 {
-    echo -n "Exctracting $1 ... ""
+    echo -n "Exctracting $1 ... "
     tar -xf $SOURCEDIR/$1 -C $BUILDDIR
     echo "OK"
 }
@@ -189,6 +191,23 @@ function build_binutils()
     cleanup_outputdir
 }
 
+function build_gmp()
+{
+    GMPVERSION=6.1.0
+    extract_archive gmp-$GMPVERSION.tar.xz
+
+    cd $BUILDDIR/gmp-$GMPVERSION
+    ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp
+    make
+    make html
+    make DESTDIR=$OUTPUTDIR install
+    make DESTDIR=$OUTPUTDIR install-html
+
+    create_pkg gmp-$GMPVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -196,4 +215,5 @@ function build_binutils()
 #build_glibc
 #build_zlib
 #build_file
-build_binutils
+#build_binutils
+build_gmp
