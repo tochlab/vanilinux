@@ -29,6 +29,13 @@ function create_pkg()
     cd $TOPDIR
 }
 
+function extract_archive()
+{
+    echo -n Exctracting $1 ...
+    tar -xf $SOURCEDIR/$1 -C $BUILDDIR
+    echo " OK"
+}
+
 function build_emptydirs()
 {
     cd output
@@ -46,10 +53,10 @@ function build_emptydirs()
     x86_64) mkdir -v /lib64 ;;
     esac
 
-    mkdir -v /var/{log,mail,spool}
-    ln -sv /run /var/run
-    ln -sv /run/lock /var/lock
-    mkdir -pv /var/{opt,cache,lib/{color,misc,locate},local}
+    mkdir -v var/{log,mail,spool}
+    ln -sv run var/run
+    ln -sv run/lock var/lock
+    mkdir -pv var/{opt,cache,lib/{color,misc,locate},local}
 
     create_pkg emptydirs-0
     cleanup_builddir
@@ -59,9 +66,9 @@ function build_emptydirs()
 function build_bash()
 {
     BASHVERSION=4.3
-    cd build/
-    tar xvfz $SOURCEDIR/bash-$BASHVERSION.tar.gz
-    cd bash-$BASHVERSION
+    extract_archive bash-$BASHVERSION.tar.gz
+
+    cd $BUILDDIR/bash-$BASHVERSION
     ./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
     make -j 4
     make DESTDIR=$OUTPUTDIR install
@@ -79,11 +86,10 @@ function build_bash()
 
 function build_linuxheaders()
 {
-    # == linux
     LINUXVERSION=4.9.25
-    cd build/
-    tar xvfJ $SOURCEDIR/linux-$LINUXVERSION.tar.xz
-    cd linux-$LINUXVERSION
+    extract_archive linux-$LINUXVERSION.tar.xz
+
+    cd $BUILDDIR/linux-$LINUXVERSION
     make mrproper
     make INSTALL_HDR_PATH=dest headers_install
     find dest/include \( -name .install -o -name ..install.cmd \) -delete
@@ -98,9 +104,9 @@ function build_linuxheaders()
 function build_manpages()
 {
     MANVERSION=4.09
-    cd build/
-    tar xvfJ $SOURCEDIR/man-pages-$MANVERSION.tar.xz
-    cd man-pages-$MANVERSION
+    extract_archive man-pages-$MANVERSION.tar.xz
+
+    cd $BUILDDIR/man-pages-$MANVERSION
     make DESTDIR=$OUTPUTDIR/ install
 
     create_pkg man-pages-$MANVERSION
@@ -108,7 +114,68 @@ function build_manpages()
     cleanup_outputdir
 }
 
+function build_glibc()
+{
+    GLIBCVERSION=2.23
+    extract_archive glibc-$GLIBCVERSION.tar.xz
+
+    cd $BUILDDIR/glibc-$GLIBCVERSION
+    mkdir -v build
+    cd build
+    ../configure --prefix=/usr --enable-kernel=2.6.32 --enable-obsolete-rpc --enable-stack-protector=strong libc_cv_slibdir=/lib
+    make -j 4
+    make check
+    touch $OUTPUTDIR/etc/ld.so.conf
+    make DESTDIR=$OUTPUTDIR install
+    cp -v ../nscd/nscd.conf $OUTPUTDIR/etc/nscd.conf
+    mkdir -pv $OUTPUTDIR/var/cache/nscd
+    echo /usr/local/lib > $OUTPUTDIR/etc/ld.so.conf
+    echo /opt/lib >> $OUTPUTDIR/etc/ld.so.conf
+
+    create_pkg glibc-$GLIBCVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+function build_zlib()
+{
+    ZLIBVERSION=1.2.11
+    extract_archive zlib-$ZLIBVERSION.tar.gz
+
+    cd $BUILDDIR/zlib-$ZLIBVERSION
+    ./configure --prefix=/usr
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+    cd $OUTPUTDIR
+    mkdir lib
+    mv -v usr/lib/libz.so.* lib
+    #TODO CHECK THIS LINKING
+    ln -sfv lib/libz.so usr/lib/libz.so
+
+    create_pkg zlib-$ZLIBVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+function build_file()
+{
+    FILEVERSION=5.29
+    extract_archive file-$FILEVERSION.tar.gz
+
+    cd $BUILDDIR/file-$FILEVERSION
+    ./configure --prefix=/usr
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg file-$FILEVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
-build_bash
+#build_bash
 #build_manpages
+#build_glibc
+build_zlib
+#build_file
