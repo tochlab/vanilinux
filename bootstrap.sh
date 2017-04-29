@@ -458,6 +458,48 @@ function build_sed()
     cleanup_outputdir
 }
 
+function build_shadow()
+{
+    SHADOWVERSION=4.4
+    extract_archive shadow-$SHADOWVERSION.tar.gz
+
+    cd $BUILDDIR/shadow-$SHADOWVERSION
+    # Disable the installation of the groups program and its man pages,
+    # as Coreutils provides a better version. Also Prevent the installation 
+    # of manual pages that were already installed by the man pages package
+    sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+    find man -name Makefile.in -exec sed -i 's/groups\.1 / /'   {} \;
+    find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
+    find man -name Makefile.in -exec sed -i 's/passwd\.5 / /'   {} \;
+
+    # CVE is a good reason not to be vanilla
+    for p in `find $SOURCEDIR/ -name shadow-$SHADOWVERSION\*.patch` ; do
+        patch -p 1 < $p
+    done
+
+    # Instead of using the default crypt method, use the more secure SHA-512
+    # method of password encryption, which also allows passwords longer than 8
+    # characters. It is also necessary to change the obsolete /var/spool/mail
+    # location for user mailboxes that Shadow uses by default to the /var/mail
+    # location used currently
+    sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
+       -e 's@/var/spool/mail@/var/mail@' etc/login.defs
+
+    # Make a minor change to make the default useradd consistent with the LFS groups file:
+    sed -i 's/1000/999/' etc/useradd
+    # Fix a security issue identified upstream
+    sed -i -e '47 d' -e '60,65 d' libmisc/myname.c
+
+    ./configure --sysconfdir=/etc --without-group-name-max-length --without-tcb --enable-shared=no --enable-static=yes --enable-man
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mv -v $OUTPUTDIR/usr/bin/passwd $OUTPUTDIR/bin
+
+    create_pkg shadow-$SHADOWVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -476,4 +518,5 @@ function build_sed()
 #build_attr
 #build_acl
 #build_libcap
-build_sed
+#build_sed
+build_shadow
