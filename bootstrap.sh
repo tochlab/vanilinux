@@ -392,6 +392,7 @@ function build_acl()
 {
     ACLVERSION=2.2.52
     extract_archive acl-$ACLVERSION.src.tar.gz
+
     cd $BUILDDIR/acl-$ACLVERSION
     # Modify the documentation directory so that it is a versioned directory
     sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
@@ -416,6 +417,25 @@ function build_acl()
     cleanup_outputdir
 }
 
+function build_libcap()
+{
+    LIBCAPVERSION=2.25
+    extract_archive libcap-$LIBCAPVERSION.tar.xz
+
+    cd $BUILDDIR/libcap-$LIBCAPVERSION
+    sed -i '/install.*STALIBNAME/d' libcap/Makefile
+
+    make
+    make RAISE_SETFCAP=no lib=lib prefix=/usr DESTDIR=$OUTPUTDIR install
+    chmod -v 755 $OUTPUTDIR/usr/lib/libcap.so
+    mkdir $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/libcap.so* $OUTPUTDIR/lib
+    
+    create_pkg libcap-$LIBCAPVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -432,4 +452,5 @@ function build_acl()
 #build_pkg_config
 #build_ncurses
 #build_attr
-build_acl
+#build_acl
+build_libcap
