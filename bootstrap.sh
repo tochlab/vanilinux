@@ -519,6 +519,21 @@ function build_psmisc()
     cleanup_outputdir
 }
 
+function build_m4()
+{
+    M4VERSION=1.4.17
+    extract_archive m4-$M4VERSION.tar.xz
+
+    cd $BUILDDIR/m4-$M4VERSION
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg m4-$M4VERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -539,4 +554,5 @@ function build_psmisc()
 #build_libcap
 #build_sed
 #build_shadow
-build_psmisc
+#build_psmisc
+build_m4
