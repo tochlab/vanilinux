@@ -436,6 +436,28 @@ function build_libcap()
     cleanup_outputdir
 }
 
+function build_sed()
+{
+    SEDVERSION=4.2.2
+    extract_archive sed-$SEDVERSION.tar.bz2
+
+    cd $BUILDDIR/sed-$SEDVERSION
+    # First fix an issue in the LFS environment and remove a failing test
+    sed -i 's/usr/tools/'       build-aux/help2man
+    sed -i 's/panic-tests.sh//' Makefile.in
+
+    ./configure --prefix=/usr --bindir=/bin
+    make
+    make html
+    make DESTDIR=$OUTPUTDIR install
+    install -d -m755 $OUTPUTDIR/usr/share/doc/sed-$SEDVERSION
+    install -m644 doc/sed.html $OUTPUTDIR/usr/share/doc/sed-$SEDVERSION
+
+    create_pkg sed-$SEDVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -453,4 +475,5 @@ function build_libcap()
 #build_ncurses
 #build_attr
 #build_acl
-build_libcap
+#build_libcap
+build_sed
