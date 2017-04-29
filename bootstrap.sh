@@ -501,6 +501,24 @@ function build_shadow()
     cleanup_outputdir
 }
 
+function build_psmisc()
+{
+    PSMISCVERSION=22.21
+    extract_archive psmisc-$PSMISCVERSION.tar.gz
+
+    cd $BUILDDIR/psmisc-$PSMISCVERSION
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mkdir $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/fuser $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/killall $OUTPUTDIR/bin
+
+    create_pkg psmisc-$PSMISCVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -520,4 +538,5 @@ function build_shadow()
 #build_acl
 #build_libcap
 #build_sed
-build_shadow
+#build_shadow
+build_psmisc
