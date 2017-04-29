@@ -42,25 +42,25 @@ function extract_archive()
 
 function build_emptydirs()
 {
-    cd output
-    mkdir -pv {bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
-    mkdir -pv {media/{floppy,cdrom},sbin,srv,var}
+    cd $OUTPUTDIR
+    mkdir -pv $OUTPUTDIR/{bin,boot,etc/{opt,sysconfig},home,lib/firmware,mnt,opt}
+    mkdir -pv $OUTPUTDIR/{media/{floppy,cdrom},sbin,srv,var}
     install -dv -m 0750 root
     install -dv -m 1777 tmp var/tmp
-    mkdir -pv usr/{,local/}{bin,include,lib,sbin,src}
-    mkdir -pv usr/{,local/}share/{color,dict,doc,info,locale,man}
-    mkdir -v  usr/{,local/}share/{misc,terminfo,zoneinfo}
-    mkdir -v  usr/libexec
-    mkdir -pv usr/{,local/}share/man/man{1..8}
+    mkdir -pv $OUTPUTDIR/usr/{,local/}{bin,include,lib,sbin,src}
+    mkdir -pv $OUTPUTDIR/usr/{,local/}share/{color,dict,doc,info,locale,man}
+    mkdir -v  $OUTPUTDIR/usr/{,local/}share/{misc,terminfo,zoneinfo}
+    mkdir -v  $OUTPUTDIR/usr/libexec
+    mkdir -pv $OUTPUTDIR/usr/{,local/}share/man/man{1..8}
 
     case $(uname -m) in
-    x86_64) mkdir -v /lib64 ;;
+    x86_64) mkdir -v $OUTPUTDIR/lib64 ;;
     esac
 
-    mkdir -v var/{log,mail,spool}
+    mkdir -v $OUTPUTDIR/var/{log,mail,spool}
     ln -sv run var/run
     ln -sv run/lock var/lock
-    mkdir -pv var/{opt,cache,lib/{color,misc,locate},local}
+    mkdir -pv $OUTPUTDIR/var/{opt,cache,lib/{color,misc,locate},local}
 
     create_pkg emptydirs-0
     cleanup_builddir
@@ -607,29 +607,29 @@ function build_readline()
     cleanup_outputdir
 }
 
-#build_emptydirs
-#build_linuxheaders
-#build_bash
-#build_manpages
-#build_glibc
-#build_zlib
-#build_file
-#build_binutils
-#build_gmp
-#build_mpfr
-#build_mpc
-#build_gcc
-#build_bzip2
-#build_pkg_config
-#build_ncurses
-#build_attr
-#build_acl
-#build_libcap
-#build_sed
-#build_shadow
-#build_psmisc
-#build_m4
-#build_bison
-#build_flex
-#build_grep
+build_emptydirs
+build_linuxheaders
+build_manpages
+build_glibc
+build_zlib
+build_file
+build_binutils
+build_gmp
+build_mpfr
+build_mpc
+build_gcc
+build_bzip2
+build_pkg_config
+build_ncurses
+build_attr
+build_acl
+build_libcap
+build_sed
+build_shadow
+build_psmisc
+build_m4
+build_bison
+build_flex
+build_grep
 build_readline
+build_bash
