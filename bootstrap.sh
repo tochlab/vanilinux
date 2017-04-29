@@ -582,6 +582,31 @@ function build_grep()
     cleanup_outputdir
 }
 
+function build_readline()
+{
+    READLINEVERION=7.0
+    extract_archive readline-$READLINEVERION.tar.gz
+
+    cd $BUILDDIR/readline-$READLINEVERION
+    # Reinstalling Readline will cause the old libraries to be
+    # moved to <libraryname>.old. While this is normally not a
+    # problem, in some cases it can trigger a linking bug in 
+    # ldconfig. This can be avoided by issuing the following two seds
+    sed -i '/MV.*old/d' Makefile.in
+    sed -i '/{OLDSUFF}/c:' support/shlib-install
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/readline-$READLINEVERION
+    make SHLIB_LIBS=-lncurses
+    make SHLIB_LIBS=-lncurses DESTDIR=$OUTPUTDIR install
+    mkdir -vp $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/lib{readline,history}.so* $OUTPUTDIR/lib
+    rmdir -v $OUTPUTDIR/usr/lib
+    rmdir -v $OUTPUTDIR/usr/bin
+
+    create_pkg realine-$READLINEVERION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -606,4 +631,5 @@ function build_grep()
 #build_m4
 #build_bison
 #build_flex
-build_grep
+#build_grep
+build_readline
