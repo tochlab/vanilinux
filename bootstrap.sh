@@ -373,8 +373,7 @@ function build_attr()
     sed -i -e "/SUBDIRS/s|man[25]||g" man/Makefile
     ./configure --prefix=/usr --bindir=/bin --disable-static
 
-    make -j 4
-
+    make
     make DESTDIR=$OUTPUTDIR install install-dev install-lib
     chmod -v 755 $OUTPUTDIR/usr/lib/libattr.so
     mkdir -p $OUTPUTDIR/lib
@@ -389,6 +388,33 @@ function build_attr()
     cleanup_outputdir
 }
 
+function build_acl()
+{
+    ACLVERSION=2.2.52
+    extract_archive acl-$ACLVERSION.src.tar.gz
+    cd $BUILDDIR/acl-$ACLVERSION
+    # Modify the documentation directory so that it is a versioned directory
+    sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
+    # Fix some broken tests
+    sed -i "s:| sed.*::g" test/{sbits-restore,cp,misc}.test
+    # Additionally, fix a bug that causes getfacl -e to segfault on overly long group name
+    sed -i -e "/TABS-1;/a if (x > (TABS-1)) x = (TABS-1);" libacl/__acl_to_any_text.c
+    ./configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib
+
+    make
+    make DESTDIR=$OUTPUTDIR install install-dev install-lib
+    chmod -v 755 $OUTPUTDIR/usr/lib/libacl.so
+    mkdir -p $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/libacl.so.* $OUTPUTDIR/lib
+    rm $OUTPUTDIR/usr/lib/libacl.so
+    cd $OUTPUTDIR/lib
+    ln -sfv libacl.so.1.1.0 libacl.so.1
+    ln -sfv libacl.so.1 libacl.so
+
+    create_pkg acl-$ACLVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
 
 #build_emptydirs
 #build_linuxheaders
@@ -405,4 +431,5 @@ function build_attr()
 #build_bzip2
 #build_pkg_config
 #build_ncurses
-build_attr
+#build_attr
+build_acl
