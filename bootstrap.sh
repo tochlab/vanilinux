@@ -317,17 +317,6 @@ function build_pkg_config()
 
 function build_ncurses()
 {
-# don't create non-wide-character Ncurses libraries
-#    make distclean
-#./configure --prefix=/usr    \
-#            --with-shared    \
-#            --without-normal \
-#            --without-debug  \
-#            --without-cxx-binding \
-#            --with-abi-version=5 
-#make sources libs
-#cp -av lib/lib*.so.5* /usr/lib
-
     NCURSESVERSION=6.0
     extract_archive ncurses-$NCURSESVERSION.tar.gz
 
@@ -373,6 +362,34 @@ function build_ncurses()
     cleanup_outputdir
 }
 
+function build_attr()
+{
+    ATTRVERSION=2.4.47
+    extract_archive attr-$ATTRVERSION.src.tar.gz
+    cd $BUILDDIR/attr-$ATTRVERSION
+    # Modify the documentation directory so that it is a versioned directory
+    sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
+    # Prevent installation of manual pages that were already installed by the man pages package
+    sed -i -e "/SUBDIRS/s|man[25]||g" man/Makefile
+    ./configure --prefix=/usr --bindir=/bin --disable-static
+
+    make -j 4
+
+    make DESTDIR=$OUTPUTDIR install install-dev install-lib
+    chmod -v 755 $OUTPUTDIR/usr/lib/libattr.so
+    mkdir -p $OUTPUTDIR/lib
+    mv -v $OUTPUTDIR/usr/lib/libattr.so.* $OUTPUTDIR/lib
+    rm $OUTPUTDIR/usr/lib/libattr.so
+    cd $OUTPUTDIR/lib
+    ln -sfv libattr.so.1.1.0 libattr.so.1
+    ln -sfv libattr.so.1 libattr.so
+
+    create_pkg attr-$ATTRVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -387,4 +404,5 @@ function build_ncurses()
 #build_gcc
 #build_bzip2
 #build_pkg_config
-build_ncurses
+#build_ncurses
+build_attr
