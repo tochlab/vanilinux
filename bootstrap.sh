@@ -97,8 +97,8 @@ function build_linuxheaders()
     make mrproper
     make INSTALL_HDR_PATH=dest headers_install
     find dest/include \( -name .install -o -name ..install.cmd \) -delete
-    mkdir -p $OUTPUTDIR/include
-    cp -rv dest/include/* $OUTPUTDIR/include
+    mkdir -p $OUTPUTDIR/usr/include
+    cp -rv dest/include/* $OUTPUTDIR/usr/include
 
     create_pkg linux-headers-$LINUXVERSION
     cleanup_builddir
