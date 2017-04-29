@@ -534,6 +534,21 @@ function build_m4()
     cleanup_outputdir
 }
 
+function build_bison()
+{
+    BISONVERSION=3.0.4
+    extract_archive bison-$BISONVERSION.tar.xz
+
+    cd $BUILDDIR/bison-$BISONVERSION
+    ./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.0.4
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg bison-$BISONVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -555,4 +570,5 @@ function build_m4()
 #build_sed
 #build_shadow
 #build_psmisc
-build_m4
+#build_m4
+build_bison
