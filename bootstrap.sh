@@ -550,6 +550,23 @@ function build_bison()
     cleanup_outputdir
 }
 
+function build_flex()
+{
+    FLEXVERSION=2.6.1
+    extract_archive flex-$FLEXVERSION.tar.xz
+
+    cd $BUILDDIR/flex-$FLEXVERSION
+    ./configure --prefix=/usr --docdir=/usr/share/doc/flex-$FLEXVERSION
+    make
+    make DESTDIR=$OUTPUTDIR install
+    cd $OUTPUTDIR/usr/bin
+    ln -sf flex lex
+
+    create_pkg flex-$FLEXVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -572,4 +589,5 @@ function build_bison()
 #build_shadow
 #build_psmisc
 #build_m4
-build_bison
+#build_bison
+build_flex
