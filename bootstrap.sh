@@ -27,6 +27,7 @@ function create_pkg()
     echo -n "Creating archive for $1 ... "
     cd $OUTPUTDIR
     find . -type f -executable -exec strip {} \;
+    rm -f usr/share/info/dir
     tar cfz $RESULTDIR/$1.tgz .
     cd $TOPDIR
     echo "OK"
