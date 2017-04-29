@@ -567,6 +567,21 @@ function build_flex()
     cleanup_outputdir
 }
 
+function build_grep()
+{
+    GREPVERSION=2.27
+    extract_archive grep-$GREPVERSION.tar.xz
+
+    cd $BUILDDIR/grep-$GREPVERSION
+    ./configure --prefix=/usr --bindir=/bin
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg grep-$GREPVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_bash
@@ -590,4 +605,5 @@ function build_flex()
 #build_psmisc
 #build_m4
 #build_bison
-build_flex
+#build_flex
+build_grep
