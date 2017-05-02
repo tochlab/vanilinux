@@ -707,6 +707,30 @@ function build_inetutils()
     cleanup_outputdir
 }
 
+function build_perl()
+{
+    PERLVERSION=5.24.1
+    extract_archive perl-$PERLVERSION.tar.xz
+
+    cd $BUILDDIR/perl-$PERLVERSION
+    export BUILD_ZLIB=False
+    export BUILD_BZIP2=0
+    sh Configure -des -Dprefix=/usr                 \
+                  -Dvendorprefix=/usr           \
+                  -Dman1dir=/usr/share/man/man1 \
+                  -Dman3dir=/usr/share/man/man3 \
+                  -Dpager="/usr/bin/less -isR"  \
+                  -Duseshrplib
+
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+    unset BUILD_ZLIB BUILD_BZIP2
+
+    create_pkg perl-$PERLVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -738,4 +762,5 @@ function build_inetutils()
 #build_gdbm
 #build_gperf
 #build_expat
-build_inetutils
+#build_inetutils
+build_perl
