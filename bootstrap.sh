@@ -685,6 +685,28 @@ function build_expat()
     cleanup_outputdir
 }
 
+function build_inetutils()
+{
+    INETUTILSVERSION=1.9.4
+    extract_archive inetutils-$INETUTILSVERSION.tar.gz
+
+    cd $BUILDDIR/inetutils-$INETUTILSVERSION
+    ./configure --prefix=/usr --localstatedir=/var --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin --disable-rsh --disable-servers
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mkdir -v $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/{hostname,ping,ping6,traceroute} $OUTPUTDIR/bin
+    mkdir -v $OUTPUTDIR/sbin
+    mv -v $OUTPUTDIR/usr/bin/ifconfig $OUTPUTDIR/sbin
+    rmdir $OUTPUTDIR/usr/libexec
+    # Strange. Its not executable after install
+    chmod +x $OUTPUTDIR/bin/*
+
+    create_pkg inetutils-$INETUTILSVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -715,4 +737,5 @@ function build_expat()
 #build_libtool
 #build_gdbm
 #build_gperf
-build_expat
+#build_expat
+build_inetutils
