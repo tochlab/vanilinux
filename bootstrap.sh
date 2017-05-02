@@ -652,6 +652,21 @@ function build_gdbm()
     cleanup_outputdir
 }
 
+function build_gperf()
+{
+    GPERFVERSION=3.0.4
+    extract_archive gperf-$GPERFVERSION.tar.gz
+
+    cd $BUILDDIR/gperf-$GPERFVERSION
+    ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-$GPERFVERSION
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg gperf-$GPERFVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -680,4 +695,5 @@ function build_gdbm()
 #build_bash
 #build_bc
 #build_libtool
-build_gdbm
+#build_gdbm
+build_gperf
