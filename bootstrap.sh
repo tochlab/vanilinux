@@ -746,6 +746,25 @@ function build_perl_xmlparser()
     cleanup_outputdir
 }
 
+function build_intltool()
+{
+    INTLTOOLVERSION=0.51.0
+    extract_archive intltool-$INTLTOOLVERSION.tar.gz
+
+    cd $BUILDDIR/intltool-$INTLTOOLVERSION
+    sed -i 's:\\\${:\\\$\\{:' intltool-update.in
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$OUTPUTDIR install
+    install -v -Dm644 $BUILDIR/doc/I18N-HOWTO $OUTPUTDIR/usr/share/doc/intltool-$INTLTOOLVERSION/I18N-HOWTO
+
+    create_pkg intltool-$INTLTOOLVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -779,4 +798,5 @@ function build_perl_xmlparser()
 #build_expat
 #build_inetutils
 #build_perl
-build_perl_xmlparser
+#build_perl_xmlparser
+build_intltool
