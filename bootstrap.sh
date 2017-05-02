@@ -855,6 +855,22 @@ function build_gettext()
     cleanup_outputdir
 }
 
+function build_procpsng()
+{
+    PROCPSNGVERSION=3.3.12
+    extract_archive procps-ng-$PROCPSNGVERSION.tar.xz
+
+    cd $BUILDDIR/procps-ng-$PROCPSNGVERSION
+    ./configure --prefix=/usr --exec-prefix= --libdir=/usr/lib --docdir=/usr/share/doc/procps-ng-$PROCPSNGVERSION --disable-static --disable-kill
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mv -v $OUTPUTDIR/usr/lib/libprocps.so* $OUTPUTDIR/lib
+
+    create_pkg procps-ng-$PROCPSNGVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -894,4 +910,5 @@ function build_gettext()
 #build_automake
 #build_xz
 #build_kmod
-build_gettext
+#build_gettext
+build_procpsng
