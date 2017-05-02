@@ -815,6 +815,28 @@ function build_xz()
     cleanup_outputdir
 }
 
+function build_kmod()
+{
+    KMODVERSION=23
+    extract_archive kmod-$KMODVERSION.tar.xz
+
+    cd $BUILDDIR/kmod-$KMODVERSION
+    ./configure --prefix=/usr --bindir=/bin --sysconfdir=/etc --with-rootlibdir=/lib --with-xz --with-zlib
+    make
+    make DESTDIR=$OUTPUTDIR install
+    cd $OUTPUTDIR/bin
+    mkdir $OUTPUTDIR/sbin
+    for target in depmod insmod lsmod modinfo modprobe rmmod; do
+        ln -sfv ../bin/kmod ../sbin/$target
+    done
+
+    ln -sfv kmod lsmod
+
+    create_pkg kmod-$KMODVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -852,4 +874,5 @@ function build_xz()
 #build_intltool
 #build_autoconf
 #build_automake
-build_xz
+#build_xz
+build_kmod
