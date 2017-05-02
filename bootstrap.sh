@@ -622,6 +622,21 @@ function build_bc()
     cleanup_outputdir
 }
 
+function build_libtool()
+{
+    LIBTOOLVERSION=2.4.6
+    extract_archive libtool-$LIBTOOLVERSION.tar.xz
+
+    cd $BUILDDIR/libtool-$LIBTOOLVERSION
+    ./configure --prefix=/usr
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg libtool-$LIBTOOLVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -648,4 +663,5 @@ function build_bc()
 #build_grep
 #build_readline
 #build_bash
-build_bc
+#build_bc
+build_libtool
