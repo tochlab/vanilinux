@@ -837,6 +837,24 @@ function build_kmod()
     cleanup_outputdir
 }
 
+function build_gettext()
+{
+    GETTEXTVERSION=0.19.8.1
+    extract_archive gettext-$GETTEXTVERSION.tar.gz
+
+    cd $BUILDDIR/gettext-$GETTEXTVERSION
+    sed -i '/^TESTS =/d' gettext-runtime/tests/Makefile.in &&
+    sed -i 's/test-lock..EXEEXT.//' gettext-tools/gnulib-tests/Makefile.in
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/gettext-$GETTEXTVERSION
+    make
+    make DESTDIR=$OUTPUTDIR install
+    chmod -v 0755 $OUTPUTDIR/usr/lib/preloadable_libintl.so
+
+    create_pkg gettext-$GETTEXTVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -875,4 +893,5 @@ function build_kmod()
 #build_autoconf
 #build_automake
 #build_xz
-build_kmod
+#build_kmod
+build_gettext
