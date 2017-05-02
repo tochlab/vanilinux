@@ -607,29 +607,45 @@ function build_readline()
     cleanup_outputdir
 }
 
-build_emptydirs
-build_linuxheaders
-build_manpages
-build_glibc
-build_zlib
-build_file
-build_binutils
-build_gmp
-build_mpfr
-build_mpc
-build_gcc
-build_bzip2
-build_pkg_config
-build_ncurses
-build_attr
-build_acl
-build_libcap
-build_sed
-build_shadow
-build_psmisc
-build_m4
-build_bison
-build_flex
-build_grep
-build_readline
-build_bash
+function build_bc()
+{
+    BCVERSION=1.06.95
+    extract_archive bc-$BCVERSION.tar.bz2
+
+    cd $BUILDDIR/bc-$BCVERSION
+    ./configure --prefix=/usr --with-readline --mandir=/usr/share/man --infodir=/usr/share/info
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg bc-$BCVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
+#build_emptydirs
+#build_linuxheaders
+#build_manpages
+#build_glibc
+#build_zlib
+#build_file
+#build_binutils
+#build_gmp
+#build_mpfr
+#build_mpc
+#build_gcc
+#build_bzip2
+#build_pkg_config
+#build_ncurses
+#build_attr
+#build_acl
+#build_libcap
+#build_sed
+#build_shadow
+#build_psmisc
+#build_m4
+#build_bison
+#build_flex
+#build_grep
+#build_readline
+#build_bash
+build_bc
