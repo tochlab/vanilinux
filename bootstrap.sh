@@ -637,6 +637,21 @@ function build_libtool()
     cleanup_outputdir
 }
 
+function build_gdbm()
+{
+    GDBMVERSION=1.11
+    extract_archive gdbm-$GDBMVERSION.tar.gz
+
+    cd $BUILDDIR/gdbm-$GDBMVERSION
+    ./configure --prefix=/usr --disable-static --enable-libgdbm-compat
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg gdbm-$GDBMVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -661,7 +676,8 @@ function build_libtool()
 #build_bison
 #build_flex
 #build_grep
-build_readline
+#build_readline
 #build_bash
 #build_bc
 #build_libtool
+build_gdbm
