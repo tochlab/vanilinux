@@ -667,6 +667,24 @@ function build_gperf()
     cleanup_outputdir
 }
 
+function build_expat()
+{
+    EXPATVERSION=2.2.0
+    extract_archive expat-$EXPATVERSION.tar.bz2
+
+    cd $BUILDDIR/expat-$EXPATVERSION
+    ./configure --prefix=/usr --disable-static
+    make
+    make DESTDIR=$OUTPUTDIR install
+    #If desired, install the documentation: 
+    #install -v -dm755 /usr/share/doc/expat-2.2.0
+    #install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.0
+    
+    create_pkg expat-$EXPATVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -696,4 +714,5 @@ function build_gperf()
 #build_bc
 #build_libtool
 #build_gdbm
-build_gperf
+#build_gperf
+build_expat
