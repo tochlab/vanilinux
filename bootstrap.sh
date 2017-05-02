@@ -794,6 +794,27 @@ function build_automake()
     cleanup_outputdir
 }
 
+function build_xz()
+{
+    XZVERSION=5.2.3
+    extract_archive xz-$XZVERSION.tar.gz
+
+    cd $BUILDDIR/xz-$XZVERSION
+    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-$XZVERSION
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mkdir -v $OUTPUTDIR/lib $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/{lzma,unlzma,lzcat,xz,unxz,xzcat} $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/lib/liblzma.so* $OUTPUTDIR/lib
+    cd $OUTPUTDIR
+    # TODO
+    #ln -svf lib/liblzma.so usr/lib/liblzma.so
+
+    create_pkg xz-$XZVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -831,3 +852,4 @@ function build_automake()
 #build_intltool
 #build_autoconf
 #build_automake
+build_xz
