@@ -584,7 +584,7 @@ function build_grep()
 
 function build_readline()
 {
-    READLINEVERION=7.0
+    READLINEVERION=6.3
     extract_archive readline-$READLINEVERION.tar.gz
 
     cd $BUILDDIR/readline-$READLINEVERION
@@ -661,7 +661,7 @@ function build_libtool()
 #build_bison
 #build_flex
 #build_grep
-#build_readline
+build_readline
 #build_bash
 #build_bc
-build_libtool
+#build_libtool
