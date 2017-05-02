@@ -731,6 +731,21 @@ function build_perl()
     cleanup_outputdir
 }
 
+function build_perl_xmlparser()
+{
+    XMLPARSERVERSION=2.44
+    extract_archive XML-Parser-$XMLPARSERVERSION.tar.gz
+
+    cd $BUILDDIR/XML-Parser-$XMLPARSERVERSION
+    perl Makefile.PL
+    make
+    make DESTDIR=$OUTPUTDIR install
+    # Strange files in usr/local/
+    create_pkg XML-Parser-$XMLPARSERVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -763,4 +778,5 @@ function build_perl()
 #build_gperf
 #build_expat
 #build_inetutils
-build_perl
+#build_perl
+build_perl_xmlparser
