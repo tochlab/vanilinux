@@ -892,6 +892,30 @@ function build_e2fsprogs()
     cleanup_outputdir
 }
 
+function build_coreutils()
+{
+    COREUTILSVERSION=8.25
+    extract_archive coreutils-$COREUTILSVERSION.tar.xz
+
+    cd $BUILDDIR/coreutils-$COREUTILSVERSION
+    ./configure --prefix=/usr --enable-no-install-program=kill,uptime
+    make
+    make DESTDIR=$OUTPUTDIR install
+    mkdir -v $OUTPUTDIR/usr/sbin
+    mkdir -v $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,rm} $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/{rmdir,stty,sync,true,uname} $OUTPUTDIR/bin
+    mv -v $OUTPUTDIR/usr/bin/chroot $OUTPUTDIR/usr/sbin
+    mkdir -v $OUTPUTDIR/usr/share/man/man8
+    mv -v $OUTPUTDIR/usr/share/man/man1/chroot.1 $OUTPUTDIR/usr/share/man/man8/chroot.8
+    sed -i s/\"1\"/\"8\"/1 $OUTPUTDIR/usr/share/man/man8/chroot.8
+
+    create_pkg coreutils-$COREUTILSVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -933,4 +957,5 @@ function build_e2fsprogs()
 #build_kmod
 #build_gettext
 #build_procpsng
-build_e2fsprogs
+#build_e2fsprogs
+build_coreutils
