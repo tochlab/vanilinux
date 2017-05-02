@@ -871,6 +871,27 @@ function build_procpsng()
     cleanup_outputdir
 }
 
+function build_e2fsprogs()
+{
+    E2FSPROGSVERSION=1.43.3
+    extract_archive e2fsprogs-$E2FSPROGSVERSION.tar.gz
+
+    cd $BUILDDIR/e2fsprogs-$E2FSPROGSVERSION
+    mkdir -v build
+    cd build
+    ../configure --prefix=/usr --bindir=/bin --with-root-prefix="" --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-uuidd --disable-fsck
+    make
+    make DESTDIR=$OUTPUTDIR install
+    make DESTDIR=$OUTPUTDIR install-libs
+    chmod -v u+w $OUTPUTDIR/usr/lib/{libcom_err,libe2p,libext2fs,libss}.a
+    gunzip -v $OUTPUTDIR/usr/share/info/libext2fs.info.gz
+    install-info --dir-file=$OUTPUTDIR/usr/share/info/dir $OUTPUTDIR/usr/share/info/libext2fs.info
+
+    create_pkg e2fsprogs-$E2FSPROGSVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -911,4 +932,5 @@ function build_procpsng()
 #build_xz
 #build_kmod
 #build_gettext
-build_procpsng
+#build_procpsng
+build_e2fsprogs
