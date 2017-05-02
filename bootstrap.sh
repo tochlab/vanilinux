@@ -763,7 +763,20 @@ function build_intltool()
     cleanup_outputdir
 }
 
+function build_autoconf()
+{
+    AUTOCONFVERSION=2.69
+    extract_archive autoconf-$AUTOCONFVERSION.tar.xz
 
+    cd $BUILDDIR/autoconf-$AUTOCONFVERSION
+    ./configure --prefix=/usr
+    make -j 4
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg autoconf-$AUTOCONFVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
 
 #build_emptydirs
 #build_linuxheaders
@@ -799,4 +812,5 @@ function build_intltool()
 #build_inetutils
 #build_perl
 #build_perl_xmlparser
-build_intltool
+#build_intltool
+build_autoconf
