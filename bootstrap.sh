@@ -778,6 +778,22 @@ function build_autoconf()
     cleanup_outputdir
 }
 
+function build_automake()
+{
+    AUTOMAKEVERSION=1.15
+    extract_archive automake-$AUTOMAKEVERSION.tar.xz
+
+    cd $BUILDDIR/automake-$AUTOMAKEVERSION
+    sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
+    ./configure --prefix=/usr --docdir=/usr/share/doc/automake-$AUTOMAKEVERSION
+    make
+    make DESTDIR=$OUTPUTDIR install
+
+    create_pkg automake-$AUTOMAKEVERSION
+    cleanup_builddir
+    cleanup_outputdir
+}
+
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
@@ -813,4 +829,5 @@ function build_autoconf()
 #build_perl
 #build_perl_xmlparser
 #build_intltool
-build_autoconf
+#build_autoconf
+#build_automake
