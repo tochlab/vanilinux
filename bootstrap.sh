@@ -73,7 +73,7 @@ function build_bash()
     extract_archive bash-$BASHVERSION.tar.gz
 
     cd $BUILDDIR/bash-$BASHVERSION
-    ./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
+    CC=clang CXX=clang++ ./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
     make -j 4
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR
@@ -147,7 +147,7 @@ function build_zlib()
     extract_archive zlib-$ZLIBVERSION.tar.gz
 
     cd $BUILDDIR/zlib-$ZLIBVERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make -j 4
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR
@@ -167,7 +167,7 @@ function build_file()
     extract_archive file-$FILEVERSION.tar.gz
 
     cd $BUILDDIR/file-$FILEVERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make -j 4
     make DESTDIR=$OUTPUTDIR install
 
@@ -184,7 +184,7 @@ function build_binutils()
     cd $BUILDDIR/binutils-$BINUTILSVERSION
     mkdir -v build
     cd build
-    ../configure --prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib
+    CC=clang CXX=clang++ ../configure --prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib
     make -j 4
     make DESTDIR=$OUTPUTDIR install
 
@@ -199,7 +199,7 @@ function build_gmp()
     extract_archive gmp-$GMPVERSION.tar.xz
 
     cd $BUILDDIR/gmp-$GMPVERSION
-    ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp
+    CC=clang CXX=clang++ ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp
     make -j 4
     make html
     make DESTDIR=$OUTPUTDIR install
@@ -216,7 +216,7 @@ function build_mpfr()
     extract_archive mpfr-$MPFRVERSION.tar.xz
 
     cd $BUILDDIR/mpfr-$MPFRVERSION
-    ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr
 
     make -j 4
     make html
@@ -234,7 +234,7 @@ function build_mpc()
     extract_archive mpc-$MPCRVERSION.tar.gz
 
     cd $BUILDDIR/mpc-$MPCRVERSION
-    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc
     make -j 4
     make html
     make DESTDIR=$OUTPUTDIR install
@@ -254,7 +254,7 @@ function build_gcc()
     mkdir -v build
     cd build
     SED=sed
-    ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --with-system-zlib
+    CC=clang CXX=clang++ ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --with-system-zlib
     make -j 8
     make DESTDIR=$OUTPUTDIR install
 
@@ -308,7 +308,7 @@ function build_pkg_config()
     extract_archive pkg-config-$PKGCONFIGVERSION.tar.gz
 
     cd $BUILDDIR/pkg-config-$PKGCONFIGVERSION
-    ./configure --prefix=/usr --with-internal-glib --disable-compile-warnings --disable-host-tool --docdir=/usr/share/doc/pkg-config
+    CC=clang CXX=clang++ ./configure --prefix=/usr --with-internal-glib --disable-compile-warnings --disable-host-tool --docdir=/usr/share/doc/pkg-config
     make -j 4
     make DESTDIR=$OUTPUTDIR install
 
@@ -324,7 +324,7 @@ function build_ncurses()
 
     cd $BUILDDIR/ncurses-$NCURSESVERSION
     sed -i '/LIBTOOL_INSTALL/d' c++/Makefile.in
-    ./configure --prefix=/usr \
+    CC=clang CXX=clang++ ./configure --prefix=/usr \
     --mandir=/usr/share/man \
     --with-shared \
     --without-debug \
@@ -347,7 +347,7 @@ function build_ncurses()
     mv -v $OUTPUTDIR/usr/lib/libncursesw.so* $OUTPUTDIR/lib
 
     make distclean
-    ./configure --prefix=/usr \
+    CC=clang CXX=clang++ ./configure --prefix=/usr \
             --with-shared    \
             --without-normal \
             --without-debug  \
@@ -373,7 +373,7 @@ function build_attr()
     sed -i -e 's|/@pkg_name@|&-@pkg_version@|' include/builddefs.in
     # Prevent installation of manual pages that were already installed by the man pages package
     sed -i -e "/SUBDIRS/s|man[25]||g" man/Makefile
-    ./configure --prefix=/usr --bindir=/bin --disable-static
+    CC=clang CXX=clang++ ./configure --prefix=/usr --bindir=/bin --disable-static
 
     make
     make DESTDIR=$OUTPUTDIR install install-dev install-lib
@@ -402,7 +402,7 @@ function build_acl()
     sed -i "s:| sed.*::g" test/{sbits-restore,cp,misc}.test
     # Additionally, fix a bug that causes getfacl -e to segfault on overly long group name
     sed -i -e "/TABS-1;/a if (x > (TABS-1)) x = (TABS-1);" libacl/__acl_to_any_text.c
-    ./configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib
+    CC=clang CXX=clang++ ./configure --prefix=/usr --bindir=/bin --disable-static --libexecdir=/usr/lib
 
     make
     make DESTDIR=$OUTPUTDIR install install-dev install-lib
@@ -448,7 +448,7 @@ function build_sed()
     sed -i 's/usr/tools/'       build-aux/help2man
     sed -i 's/panic-tests.sh//' Makefile.in
 
-    ./configure --prefix=/usr --bindir=/bin
+    CC=clang CXX=clang++ ./configure --prefix=/usr --bindir=/bin
     make
     make html
     make DESTDIR=$OUTPUTDIR install
@@ -492,7 +492,7 @@ function build_shadow()
     # Fix a security issue identified upstream
     sed -i -e '47 d' -e '60,65 d' libmisc/myname.c
 
-    ./configure --sysconfdir=/etc --without-group-name-max-length --without-tcb --enable-shared=no --enable-static=yes --enable-man
+    CC=clang CXX=clang++ ./configure --sysconfdir=/etc --without-group-name-max-length --without-tcb --enable-shared=no --enable-static=yes --enable-man
     make
     make DESTDIR=$OUTPUTDIR install
     mv -v $OUTPUTDIR/usr/bin/passwd $OUTPUTDIR/bin
@@ -508,7 +508,7 @@ function build_psmisc()
     extract_archive psmisc-$PSMISCVERSION.tar.gz
 
     cd $BUILDDIR/psmisc-$PSMISCVERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make
     make DESTDIR=$OUTPUTDIR install
     mkdir $OUTPUTDIR/bin
@@ -526,7 +526,7 @@ function build_m4()
     extract_archive m4-$M4VERSION.tar.xz
 
     cd $BUILDDIR/m4-$M4VERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -541,7 +541,7 @@ function build_bison()
     extract_archive bison-$BISONVERSION.tar.xz
 
     cd $BUILDDIR/bison-$BISONVERSION
-    ./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.0.4
+    CC=clang CXX=clang++ ./configure --prefix=/usr --docdir=/usr/share/doc/bison-3.0.4
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -556,7 +556,7 @@ function build_flex()
     extract_archive flex-$FLEXVERSION.tar.xz
 
     cd $BUILDDIR/flex-$FLEXVERSION
-    ./configure --prefix=/usr --docdir=/usr/share/doc/flex-$FLEXVERSION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --docdir=/usr/share/doc/flex-$FLEXVERSION
     make
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR/usr/bin
@@ -573,7 +573,7 @@ function build_grep()
     extract_archive grep-$GREPVERSION.tar.xz
 
     cd $BUILDDIR/grep-$GREPVERSION
-    ./configure --prefix=/usr --bindir=/bin
+    CC=clang CXX=clang++ ./configure --prefix=/usr --bindir=/bin
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -594,7 +594,7 @@ function build_readline()
     # ldconfig. This can be avoided by issuing the following two seds
     sed -i '/MV.*old/d' Makefile.in
     sed -i '/{OLDSUFF}/c:' support/shlib-install
-    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/readline-$READLINEVERION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/readline-$READLINEVERION
     make SHLIB_LIBS=-lncurses
     make SHLIB_LIBS=-lncurses DESTDIR=$OUTPUTDIR install
     mkdir -vp $OUTPUTDIR/lib
@@ -613,7 +613,7 @@ function build_bc()
     extract_archive bc-$BCVERSION.tar.bz2
 
     cd $BUILDDIR/bc-$BCVERSION
-    ./configure --prefix=/usr --with-readline --mandir=/usr/share/man --infodir=/usr/share/info
+    CC=clang CXX=clang++ ./configure --prefix=/usr --with-readline --mandir=/usr/share/man --infodir=/usr/share/info
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -628,7 +628,7 @@ function build_libtool()
     extract_archive libtool-$LIBTOOLVERSION.tar.xz
 
     cd $BUILDDIR/libtool-$LIBTOOLVERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -643,7 +643,7 @@ function build_gdbm()
     extract_archive gdbm-$GDBMVERSION.tar.gz
 
     cd $BUILDDIR/gdbm-$GDBMVERSION
-    ./configure --prefix=/usr --disable-static --enable-libgdbm-compat
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --enable-libgdbm-compat
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -658,7 +658,7 @@ function build_gperf()
     extract_archive gperf-$GPERFVERSION.tar.gz
 
     cd $BUILDDIR/gperf-$GPERFVERSION
-    ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-$GPERFVERSION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --docdir=/usr/share/doc/gperf-$GPERFVERSION
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -673,7 +673,7 @@ function build_expat()
     extract_archive expat-$EXPATVERSION.tar.bz2
 
     cd $BUILDDIR/expat-$EXPATVERSION
-    ./configure --prefix=/usr --disable-static
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static
     make
     make DESTDIR=$OUTPUTDIR install
     #If desired, install the documentation: 
@@ -691,7 +691,7 @@ function build_inetutils()
     extract_archive inetutils-$INETUTILSVERSION.tar.gz
 
     cd $BUILDDIR/inetutils-$INETUTILSVERSION
-    ./configure --prefix=/usr --localstatedir=/var --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin --disable-rsh --disable-servers
+    CC=clang CXX=clang++ ./configure --prefix=/usr --localstatedir=/var --disable-logger --disable-whois --disable-rcp --disable-rexec --disable-rlogin --disable-rsh --disable-servers
     make
     make DESTDIR=$OUTPUTDIR install
     mkdir -v $OUTPUTDIR/bin
@@ -715,6 +715,8 @@ function build_perl()
     cd $BUILDDIR/perl-$PERLVERSION
     export BUILD_ZLIB=False
     export BUILD_BZIP2=0
+    export CC=clang
+    export CXX=clang++ 
     sh Configure -des -Dprefix=/usr                 \
                   -Dvendorprefix=/usr           \
                   -Dman1dir=/usr/share/man/man1 \
@@ -753,7 +755,7 @@ function build_intltool()
 
     cd $BUILDDIR/intltool-$INTLTOOLVERSION
     sed -i 's:\\\${:\\\$\\{:' intltool-update.in
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make
     make DESTDIR=$OUTPUTDIR install
     install -v -Dm644 $BUILDIR/doc/I18N-HOWTO $OUTPUTDIR/usr/share/doc/intltool-$INTLTOOLVERSION/I18N-HOWTO
@@ -769,7 +771,7 @@ function build_autoconf()
     extract_archive autoconf-$AUTOCONFVERSION.tar.xz
 
     cd $BUILDDIR/autoconf-$AUTOCONFVERSION
-    ./configure --prefix=/usr
+    CC=clang CXX=clang++ ./configure --prefix=/usr
     make -j 4
     make DESTDIR=$OUTPUTDIR install
 
@@ -785,7 +787,7 @@ function build_automake()
 
     cd $BUILDDIR/automake-$AUTOMAKEVERSION
     sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
-    ./configure --prefix=/usr --docdir=/usr/share/doc/automake-$AUTOMAKEVERSION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --docdir=/usr/share/doc/automake-$AUTOMAKEVERSION
     make
     make DESTDIR=$OUTPUTDIR install
 
@@ -800,7 +802,7 @@ function build_xz()
     extract_archive xz-$XZVERSION.tar.gz
 
     cd $BUILDDIR/xz-$XZVERSION
-    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-$XZVERSION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/xz-$XZVERSION
     make
     make DESTDIR=$OUTPUTDIR install
     mkdir -v $OUTPUTDIR/lib $OUTPUTDIR/bin
@@ -821,7 +823,7 @@ function build_kmod()
     extract_archive kmod-$KMODVERSION.tar.xz
 
     cd $BUILDDIR/kmod-$KMODVERSION
-    ./configure --prefix=/usr --bindir=/bin --sysconfdir=/etc --with-rootlibdir=/lib --with-xz --with-zlib
+    CC=clang CXX=clang++ ./configure --prefix=/usr --bindir=/bin --sysconfdir=/etc --with-rootlibdir=/lib --with-xz --with-zlib
     make
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR/bin
@@ -845,7 +847,7 @@ function build_gettext()
     cd $BUILDDIR/gettext-$GETTEXTVERSION
     sed -i '/^TESTS =/d' gettext-runtime/tests/Makefile.in &&
     sed -i 's/test-lock..EXEEXT.//' gettext-tools/gnulib-tests/Makefile.in
-    ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/gettext-$GETTEXTVERSION
+    CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/gettext-$GETTEXTVERSION
     make
     make DESTDIR=$OUTPUTDIR install
     chmod -v 0755 $OUTPUTDIR/usr/lib/preloadable_libintl.so
@@ -861,7 +863,7 @@ function build_procpsng()
     extract_archive procps-ng-$PROCPSNGVERSION.tar.xz
 
     cd $BUILDDIR/procps-ng-$PROCPSNGVERSION
-    ./configure --prefix=/usr --exec-prefix= --libdir=/usr/lib --docdir=/usr/share/doc/procps-ng-$PROCPSNGVERSION --disable-static --disable-kill
+    CC=clang CXX=clang++ ./configure --prefix=/usr --exec-prefix= --libdir=/usr/lib --docdir=/usr/share/doc/procps-ng-$PROCPSNGVERSION --disable-static --disable-kill
     make
     make DESTDIR=$OUTPUTDIR install
     mv -v $OUTPUTDIR/usr/lib/libprocps.so* $OUTPUTDIR/lib
@@ -879,7 +881,7 @@ function build_e2fsprogs()
     cd $BUILDDIR/e2fsprogs-$E2FSPROGSVERSION
     mkdir -v build
     cd build
-    ../configure --prefix=/usr --bindir=/bin --with-root-prefix="" --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-uuidd --disable-fsck
+    CC=clang CXX=clang++ ../configure --prefix=/usr --bindir=/bin --with-root-prefix="" --enable-elf-shlibs --disable-libblkid --disable-libuuid --disable-uuidd --disable-fsck
     make
     make DESTDIR=$OUTPUTDIR install
     make DESTDIR=$OUTPUTDIR install-libs
@@ -898,7 +900,7 @@ function build_coreutils()
     extract_archive coreutils-$COREUTILSVERSION.tar.xz
 
     cd $BUILDDIR/coreutils-$COREUTILSVERSION
-    ./configure --prefix=/usr --enable-no-install-program=kill,uptime
+    CC=clang CXX=clang++ ./configure --prefix=/usr --enable-no-install-program=kill,uptime
     make
     make DESTDIR=$OUTPUTDIR install
     mkdir -v $OUTPUTDIR/usr/sbin
@@ -919,7 +921,7 @@ function build_coreutils()
 #build_emptydirs
 #build_linuxheaders
 #build_manpages
-#build_glibc
+build_glibc
 #build_zlib
 #build_file
 #build_binutils
@@ -958,4 +960,4 @@ function build_coreutils()
 #build_gettext
 #build_procpsng
 #build_e2fsprogs
-build_coreutils
+#build_coreutils
