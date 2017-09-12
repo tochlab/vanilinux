@@ -4,7 +4,7 @@ BUILDDIR=`pwd`/build
 OUTPUTDIR=`pwd`/output
 SOURCEDIR=`pwd`/sources
 RESULTDIR=`pwd`/result
-MAKEJOBS=-j 2
+MAKEJOBS=-j2
 mkdir -p $BUILDDIR
 mkdir -p $OUTPUTDIR
 mkdir -p $RESULTDIR
@@ -91,7 +91,7 @@ function build_bash()
 
 function build_linuxheaders()
 {
-    LINUXVERSION=4.9.25
+    LINUXVERSION=4.9.49
     extract_archive linux-$LINUXVERSION.tar.xz
 
     cd $BUILDDIR/linux-$LINUXVERSION
@@ -121,7 +121,7 @@ function build_manpages()
 
 function build_glibc()
 {
-    GLIBCVERSION=2.23
+    GLIBCVERSION=2.26
     extract_archive glibc-$GLIBCVERSION.tar.xz
 
     cd $BUILDDIR/glibc-$GLIBCVERSION
@@ -179,7 +179,7 @@ function build_file()
 
 function build_binutils()
 {
-    BINUTILSVERSION=2.27
+    BINUTILSVERSION=2.29
     extract_archive binutils-$BINUTILSVERSION.tar.bz2
 
     cd $BUILDDIR/binutils-$BINUTILSVERSION
