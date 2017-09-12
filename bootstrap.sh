@@ -4,6 +4,7 @@ BUILDDIR=`pwd`/build
 OUTPUTDIR=`pwd`/output
 SOURCEDIR=`pwd`/sources
 RESULTDIR=`pwd`/result
+MAKEJOBS=-j 2
 mkdir -p $BUILDDIR
 mkdir -p $OUTPUTDIR
 mkdir -p $RESULTDIR
@@ -74,7 +75,7 @@ function build_bash()
 
     cd $BUILDDIR/bash-$BASHVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr --without-bash-malloc --with-installed-readline 
-    make -j 4
+    make $MAKEJOBS
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR
     mkdir -p bin
@@ -127,7 +128,7 @@ function build_glibc()
     mkdir -v build
     cd build
     ../configure --prefix=/usr --enable-kernel=2.6.32 --enable-obsolete-rpc --enable-stack-protector=strong libc_cv_slibdir=/lib
-    make -j 4
+    make $MAKEJOBS
     make check
     touch $OUTPUTDIR/etc/ld.so.conf
     make DESTDIR=$OUTPUTDIR install
@@ -148,7 +149,7 @@ function build_zlib()
 
     cd $BUILDDIR/zlib-$ZLIBVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr
-    make -j 4
+    make $MAKEJOBS
     make DESTDIR=$OUTPUTDIR install
     cd $OUTPUTDIR
     mkdir lib
@@ -168,7 +169,7 @@ function build_file()
 
     cd $BUILDDIR/file-$FILEVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     create_pkg file-$FILEVERSION
@@ -185,7 +186,7 @@ function build_binutils()
     mkdir -v build
     cd build
     CC=clang CXX=clang++ ../configure --prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     create_pkg binutils-$BINUTILSVERSION
@@ -200,7 +201,7 @@ function build_gmp()
 
     cd $BUILDDIR/gmp-$GMPVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr --enable-cxx --disable-static --docdir=/usr/share/doc/gmp
-    make -j 4
+    make $MAKEJOBS 
     make html
     make DESTDIR=$OUTPUTDIR install
     make DESTDIR=$OUTPUTDIR install-html
@@ -218,7 +219,7 @@ function build_mpfr()
     cd $BUILDDIR/mpfr-$MPFRVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --enable-thread-safe --docdir=/usr/share/doc/mpfr
 
-    make -j 4
+    make $MAKEJOBS 
     make html
     make DESTDIR=$OUTPUTDIR install
     make DESTDIR=$OUTPUTDIR install-html
@@ -235,7 +236,7 @@ function build_mpc()
 
     cd $BUILDDIR/mpc-$MPCRVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr --disable-static --docdir=/usr/share/doc/mpc
-    make -j 4
+    make $MAKEJOBS 
     make html
     make DESTDIR=$OUTPUTDIR install
     make DESTDIR=$OUTPUTDIR install-html
@@ -255,7 +256,7 @@ function build_gcc()
     cd build
     SED=sed
     CC=clang CXX=clang++ ../configure --prefix=/usr --enable-languages=c,c++ --disable-multilib --disable-bootstrap --with-system-zlib
-    make -j 8
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     cd $OUTPUTDIR
@@ -309,7 +310,7 @@ function build_pkg_config()
 
     cd $BUILDDIR/pkg-config-$PKGCONFIGVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr --with-internal-glib --disable-compile-warnings --disable-host-tool --docdir=/usr/share/doc/pkg-config
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     create_pkg pkg-config-$PKGCONFIGVERSION
@@ -340,7 +341,7 @@ function build_ncurses()
     --enable-colorfgbg \
     --enable-hard-tabs \
     --enable-echo
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     mkdir $OUTPUTDIR/lib
@@ -352,7 +353,7 @@ function build_ncurses()
             --without-normal \
             --without-debug  \
             --without-cxx-binding
-    make sourses libs -j 4
+    make sourses libs $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     mv -v $OUTPUTDIR/usr/lib/libncurses.so* $OUTPUTDIR/lib
@@ -724,7 +725,7 @@ function build_perl()
                   -Dpager="/usr/bin/less -isR"  \
                   -Duseshrplib
 
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
     unset BUILD_ZLIB BUILD_BZIP2
 
@@ -772,7 +773,7 @@ function build_autoconf()
 
     cd $BUILDDIR/autoconf-$AUTOCONFVERSION
     CC=clang CXX=clang++ ./configure --prefix=/usr
-    make -j 4
+    make $MAKEJOBS 
     make DESTDIR=$OUTPUTDIR install
 
     create_pkg autoconf-$AUTOCONFVERSION
@@ -918,46 +919,46 @@ function build_coreutils()
     cleanup_outputdir
 }
 
-#build_emptydirs
-#build_linuxheaders
-#build_manpages
+build_emptydirs
+build_linuxheaders
+build_manpages
 build_glibc
-#build_zlib
-#build_file
-#build_binutils
-#build_gmp
-#build_mpfr
-#build_mpc
-#build_gcc
-#build_bzip2
-#build_pkg_config
-#build_ncurses
-#build_attr
-#build_acl
-#build_libcap
-#build_sed
-#build_shadow
-#build_psmisc
-#build_m4
-#build_bison
-#build_flex
-#build_grep
-#build_readline
-#build_bash
-#build_bc
-#build_libtool
-#build_gdbm
-#build_gperf
-#build_expat
-#build_inetutils
-#build_perl
-#build_perl_xmlparser
-#build_intltool
-#build_autoconf
-#build_automake
-#build_xz
-#build_kmod
-#build_gettext
-#build_procpsng
-#build_e2fsprogs
-#build_coreutils
+build_zlib
+build_file
+build_binutils
+build_gmp
+build_mpfr
+build_mpc
+build_gcc
+build_bzip2
+build_pkg_config
+build_ncurses
+build_attr
+build_acl
+build_libcap
+build_sed
+build_shadow
+build_psmisc
+build_m4
+build_bison
+build_flex
+build_grep
+build_readline
+build_bash
+build_bc
+build_libtool
+build_gdbm
+build_gperf
+build_expat
+build_inetutils
+build_perl
+build_perl_xmlparser
+build_intltool
+build_autoconf
+build_automake
+build_xz
+build_kmod
+build_gettext
+build_procpsng
+build_e2fsprogs
+build_coreutils
